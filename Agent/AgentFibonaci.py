@@ -8,10 +8,18 @@ class AgentFibonaci():
 		self.vally=[]
 		self.trend="none"
 
-	def updateAgentData(self,data):
+	def getData(self,data,offset=0):
 		self.data=data
-		avg=ay.getMovingAvg(data,ran=50)
-		self.avg=avg
-		self.peaks=ay.getPeaks(data,avg)
-		self.vally=ay.getVally(data,avg)
-		self.trend=ay.determineTrend(avg,offset=50)
+		self.avg=ay.getMovingAvg(data,ran=20)
+		self.peaks=ay.getPeaks(self.avg,secavg=10)
+		self.vally=ay.getVally(self.avg,secavg=10)
+		hh,lh,hl,ll = ay.getLowHigh(self.peaks,self.vally)
+		#self.trend=ay.determineTrend(avg,offset=30)
+
+		#prilagodimo da se bo prkazalo na plotu pravilno
+		if offset>len(data):
+			hh[0]=hh[0]+offset-len(data)
+			lh[0]=lh[0]+offset-len(data)
+			hl[0]=hl[0]+offset-len(data)
+			ll[0]=ll[0]+offset-len(data)
+		return hh,lh,hl,ll

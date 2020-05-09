@@ -18,7 +18,6 @@ class tradedriver:
 		self.driver.switch_to_frame(self.frame)	
 
 		self.activeorders_manual=list()
-		self.activeorders=list()
 
 	def read_current_val(self,symbol):
 		pass
@@ -44,14 +43,15 @@ class tradedriver:
 		vol=self.driver.find_element_by_css_selector('#order-ie-dialog-volume')
 		vol.click()
 		vol.send_keys(str(volume))
+		if stoploss is not 0:
+			stop_loss=self.driver.find_element_by_css_selector('#order-ie-dialog-sl')
+			stop_loss.click()
+			stop_loss.send_keys(str(stoploss))
 
-		stop_loss=self.driver.find_element_by_css_selector('#order-ie-dialog-sl')
-		stop_loss.click()
-		stop_loss.send_keys(str(stoploss))
-
-		take_profit=self.driver.find_element_by_css_selector('#order-ie-dialog-tp')
-		take_profit.click()
-		take_profit.send_keys(str(takeprofit))
+		if takeprofit is not 0:
+			take_profit=self.driver.find_element_by_css_selector('#order-ie-dialog-tp')
+			take_profit.click()
+			take_profit.send_keys(str(takeprofit))
 
 		if what=="buy":
 			buy= WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(16)')))
@@ -68,7 +68,7 @@ class tradedriver:
 			pressaccept.click()
 
 		getordername=WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > div:nth-child(14)')))
-		
+		ordername=None
 		try:
 			ordername=re.search(r"(?<=#).*?(?= )", getordername.text).group(0)
 			self.orders_maneger("add","position_"+ordername)
@@ -77,6 +77,7 @@ class tradedriver:
 
 		pressexit = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.wx')))
 		pressexit.click()
+		return ordername
 	
 
 	def close_orders(self,ordername):
@@ -106,12 +107,15 @@ class tradedriver:
 
 	def check_for_open_orders(self):
 		if self.check_exists_by_selector('body > div.page-block.frame.bottom > div.ext-table.fixed.odd.grid.no-border.trade-table.toolbox-table.at-trade-table > div.tables-box > table >tbody'):
-			self.activeorders=list()
+			activeorders=list()
 			orders_table=self.driver.find_element_by_css_selector('body > div.page-block.frame.bottom > div.ext-table.fixed.odd.grid.no-border.trade-table.toolbox-table.at-trade-table > div.tables-box > table >tbody')
 			orders_table_names=orders_table.find_elements(By.CLASS_NAME,"filled")
 			for ii in orders_table_names:
 				ordername=ii.get_attribute('id')
 				if ordername !="total":
-					self.activeorders.append(str(ordername))
+					activeorders.append(str(ordername))
 				else:
-					self.activeorders=list()
+					activeorders=list()
+			return activeorders
+		else:
+			return list()
