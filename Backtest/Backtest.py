@@ -46,12 +46,12 @@ plt.scatter([item[0] for item in agentF.vally],[item[1] for item in agentF.vally
 plt.scatter([item[0] for item in a1.marketOpenArray("EURGBP")],[item[1] for item in a1.marketOpenArray("EURGBP")],color='green')
 plt.scatter([item[0] for item in a1.marketCloseArray("EURGBP")],[item[1] for item in a1.marketCloseArray("EURGBP")],color='red')
 
-'''
+
 plt.scatter(hh[0],hh[1],color='yellow')
 plt.scatter(lh[0],lh[1],color='red')
 plt.scatter(hl[0],hl[1],color='green')
 plt.scatter(ll[0],ll[1],color='black')
-'''
+
 
 
 

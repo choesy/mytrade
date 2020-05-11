@@ -16,8 +16,11 @@ class tradedriver:
 		self.driver.get("https://www.mql5.com/en/trading")
 		self.frame = self.driver.find_element_by_css_selector('#webTerminalHost')
 		self.driver.switch_to_frame(self.frame)	
-
 		self.activeorders_manual=list()
+
+		input("When finished loadin, Press Enter to continue...")
+		self.authorize_oneclick()
+
 
 	def read_current_val(self,symbol):
 		pass
@@ -32,13 +35,18 @@ class tradedriver:
 		oneclicktrading4=WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(19) > div > div.b > button:nth-child(4)')))
 		oneclicktrading4.click()
 
+
+	def double_click(self,toclick):
+		action_chain = ActionChains(self.driver)   #moramo reinicializirat driver za actionchain vsakic
+		action_chain.double_click(toclick).perform()
+
 	def place_order(self,symbol,what,volume,stoploss,takeprofit): # self je samo ime, nerabi bit vedno seflg, lahko je tud slojfer, cevap, j, s , kk ...
-		narocilo=self.driver.find_element_by_css_selector('#'+symbol) # odprtje okna za postavitev narocila
-		self.actionChains.double_click(narocilo).perform()
-		time.sleep(1)
+		narcilo=WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "#"+symbol)))# odprtje okna za postavitev narocila
+		self.double_click(narcilo)
+		time.sleep(2)
 		comment=self.driver.find_element_by_css_selector('#order-ie-dialog-comment')
 		comment.click()
-		comment.send_keys("order number 1csasf")
+		#comment.send_keys(" ")
 
 		vol=self.driver.find_element_by_css_selector('#order-ie-dialog-volume')
 		vol.click()
@@ -81,15 +89,34 @@ class tradedriver:
 	
 
 	def close_orders(self,ordername):
-		order_element=0
+		order_element=None
 		if ordername=="all":
-			self.check_for_open_orders()
-			for elid in self.activeorders:
+			activeorders=self.check_for_open_orders()
+			for elid in activeorders:
 					order_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, elid)))
-					order_element.click()
-					order_element.click()
+					self.double_click(order_element)
+					closeit = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button.input-button.yellow')))
+					closeit.click()
+
+					if (self.check_exists_by_selector('body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')):
+						pressaccept = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
+						pressaccept.click()
+					
+					clickok = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(18)')))
+					clickok.click()
 		else:
+			ordername= "position_"+ordername
 			order_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, ordername)))
+			self.double_click(order_element)
+			closeit = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button.input-button.yellow')))
+			closeit.click()
+
+			if (self.check_exists_by_selector('body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')):
+				pressaccept = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
+				pressaccept.click()
+
+			clickok = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(18)')))
+			clickok.click()
 		
 	def check_exists_by_selector(self,selector):
 		try:
@@ -106,16 +133,12 @@ class tradedriver:
 			pass
 
 	def check_for_open_orders(self):
+		activeorders=list()
 		if self.check_exists_by_selector('body > div.page-block.frame.bottom > div.ext-table.fixed.odd.grid.no-border.trade-table.toolbox-table.at-trade-table > div.tables-box > table >tbody'):
-			activeorders=list()
 			orders_table=self.driver.find_element_by_css_selector('body > div.page-block.frame.bottom > div.ext-table.fixed.odd.grid.no-border.trade-table.toolbox-table.at-trade-table > div.tables-box > table >tbody')
 			orders_table_names=orders_table.find_elements(By.CLASS_NAME,"filled")
 			for ii in orders_table_names:
 				ordername=ii.get_attribute('id')
 				if ordername !="total":
 					activeorders.append(str(ordername))
-				else:
-					activeorders=list()
-			return activeorders
-		else:
-			return list()
+		return activeorders
