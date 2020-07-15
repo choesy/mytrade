@@ -1,14 +1,10 @@
 from selenium import webdriver
 import re
 import time
-from selenium.webdriver.common.keys import Keys 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import ElementNotVisibleException
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.select import Select
 class tradedriver:
 	def __init__(self):
 		self.driver = webdriver.Chrome()
@@ -38,6 +34,7 @@ class tradedriver:
 
 	def double_click(self,toclick):
 		action_chain = ActionChains(self.driver)   #moramo reinicializirat driver za actionchain vsakic
+		time.sleep(0.5)
 		action_chain.double_click(toclick).perform()
 
 	def place_order(self,symbol,what,volume,stoploss,takeprofit): # self je samo ime, nerabi bit vedno seflg, lahko je tud slojfer, cevap, j, s , kk ...
@@ -72,10 +69,10 @@ class tradedriver:
 
 
 		if (self.check_exists_by_selector('body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')):
-			pressaccept = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
+			pressaccept = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
 			pressaccept.click()
 
-		getordername=WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > div:nth-child(14)')))
+		getordername=WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > div:nth-child(14)')))
 		ordername=None
 		try:
 			ordername=re.search(r"(?<=#).*?(?= )", getordername.text).group(0)
@@ -83,7 +80,7 @@ class tradedriver:
 		except:
 			pass
 
-		pressexit = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.wx')))
+		pressexit = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.wx')))
 		pressexit.click()
 		return ordername
 	
@@ -93,34 +90,34 @@ class tradedriver:
 		if ordername=="all":
 			activeorders=self.check_for_open_orders()
 			for elid in activeorders:
-					order_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, elid)))
+					order_element = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, elid)))
 					self.double_click(order_element)
-					closeit = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button.input-button.yellow')))
+					closeit = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button.input-button.yellow')))
 					closeit.click()
 
 					if (self.check_exists_by_selector('body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')):
-						pressaccept = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
+						pressaccept = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
 						pressaccept.click()
 					
-					clickok = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(18)')))
+					clickok = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.wx')))
 					clickok.click()
 		else:
 			ordername= "position_"+ordername
-			order_element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, ordername)))
+			order_element = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, ordername)))
 			self.double_click(order_element)
-			closeit = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button.input-button.yellow')))
+			closeit = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button.input-button.yellow')))
 			closeit.click()
 
 			if (self.check_exists_by_selector('body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')):
-				pressaccept = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
+				pressaccept = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(20)')))
 				pressaccept.click()
 
-			clickok = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.b > div.page-block > div:nth-child(1) > button:nth-child(18)')))
+			clickok = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div:nth-child(20) > div > div.wx')))
 			clickok.click()
 		
 	def check_exists_by_selector(self,selector):
 		try:
-			WebDriverWait(self.driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
+			WebDriverWait(self.driver, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector)))
 		except: 
 			return False
 		else:

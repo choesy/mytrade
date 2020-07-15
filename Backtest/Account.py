@@ -39,6 +39,8 @@ class Account:
 		else:
 			for market in self.MarketList:
 				if marketName==market.marketName:
+					if(action==None):
+						return
 					orderID=market.orderCreate(action,lot,stopLoss,takeProfit)
 					return marketName,orderID
 
@@ -80,6 +82,8 @@ class Account:
 			else:
 				endedCount+=1	
 		return endedCount==marketLen
+		if (self.balance<=0):
+			return True
 
 	def deleteAllMarkets(self):
 		for market in self.MarketList:

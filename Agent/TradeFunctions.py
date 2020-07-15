@@ -61,13 +61,16 @@ def getMovingAvg(data,ran=4):
 		out.append([i-ran//2,avgval])
 	return out
 
-def determineTrend(avg,offset=1):
-	if avg[-1]>avg[-(1+offset)]:
-		return "up"
-	elif avg[-1]<avg[-(1+offset)]:
-		return "down"
+def determineTrend(data,offset=30,avgnum=50):
+	avg=getMovingAvg(data,avgnum)
+	if(offset>=len(avg)):
+		offset=len(avg)-1
+	if avg[-1][1]>avg[-(1+offset)][1]:
+		return 1
+	elif avg[-1][1]<avg[-(1+offset)][1]:
+		return -1
 	else:
-		return "none"
+		return 0
 
 
 #return lowest high, highest high,highest low ,lowest low
