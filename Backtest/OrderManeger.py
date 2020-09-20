@@ -11,7 +11,7 @@ class Orders:
 			self.stopLoss=startingValue-stopLoss/100000
 			self.takeProfit=startingValue+takeProfit/100000
 		elif action=="sell":
-			self.stopLoss=startingValue+stopLoss/100000
+			self.stopLoss=startingValue+stopLoss/100000 #convertiranje v pipe
 			self.takeProfit=startingValue-takeProfit/100000
 		else:
 			raise EnvironmentError #ni ne buy ne sell
@@ -36,8 +36,8 @@ class Orders:
 
 	def closeOrder(self,currentValue):
 		if self.action=="buy":
-			diff=currentValue-self.startingValue
+			diff=currentValue-self.startingValue #dobimo številko pipov
 		elif self.action=="sell":
 			diff=self.startingValue-currentValue
-		return diff*100000*self.lot
+		return diff*100000*self.lot #moramo pomnožit pipe z 100000 in z self.lot da dobimo dejansko denarno razliko
 

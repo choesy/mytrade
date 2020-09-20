@@ -65,12 +65,7 @@ def determineTrend(data,offset=30,avgnum=50):
 	avg=getMovingAvg(data,avgnum)
 	if(offset>=len(avg)):
 		offset=len(avg)-1
-	if avg[-1][1]>avg[-(1+offset)][1]:
-		return 1
-	elif avg[-1][1]<avg[-(1+offset)][1]:
-		return -1
-	else:
-		return 0
+	return (avg[-1][1]-avg[-(1+offset)][1])*1000
 
 
 #return lowest high, highest high,highest low ,lowest low
@@ -91,3 +86,8 @@ def getLowHigh(peaks,vally):
 		if v[1]<ll[1]:
 			ll=[v[0],v[1]]
 	return hh,lh,hl,ll
+
+def getDeviation(avg,val):
+	avgnp=np.array(avg)
+	val=np.array(val)
+	return np.sqrt(np.sum(np.square(avgnp[:,1]-val[2*int(avgnp[0][0]):]))/len(avgnp))

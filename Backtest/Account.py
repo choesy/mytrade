@@ -32,8 +32,10 @@ class Account:
 				return market.getPrevMarketData(num)
 
 	def placeOrder(self,marketName,action,lot,stopLoss,takeProfit):
-		stopLoss=stopLoss*self.balance/lot
-		takeProfit=takeProfit*self.balance/lot
+		#stopLoss in takeprofit so Procentih 0..1
+		stopLoss=stopLoss*lot*100000 #kolicina denarja ki si jo pripravljen izgubit v EUR, torej procennti od tvojega ballance (upoštevati se mora lot) 
+		takeProfit=takeProfit*lot*100000
+		print(takeProfit)
 		if lot>self.maxLotSize:
 			print("insufficient money")
 		else:
